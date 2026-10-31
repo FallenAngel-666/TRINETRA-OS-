@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TRINETRA | Intelligent Campus & Building Operations Management System</title>
+  <link rel="stylesheet" href="css/styles.css">
+  
+  <!-- Three.js and OrbitControls CDN with error resilience -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+</head>
+<body>
+
+  <!-- TOP ENTERPRISE COMMAND BAR -->
+  <header class="top-header">
+    <div class="brand-section">
+      <div class="brand-logo-badge">👁️</div>
+      <div class="brand-text">
+        <h1>TRINETRA <span class="tagline-badge">Autonomous Twin</span></h1>
+        <p>See Everything. Understand Everything. Manage Everything.</p>
+      </div>
+    </div>
+
+    <div class="header-center-info">
+      <div class="campus-pill">
+        <span class="dot"></span>
+        <span><strong>SRM Easwari Engineering College</strong> • Ramapuram, Chennai</span>
+      </div>
+      <div style="font-size: 11px; font-family: var(--font-mono); color: var(--text-muted);" id="system-clock">
+        Loading System Clock...
+      </div>
+    </div>
+
+    <div class="header-actions">
+      <!-- QUICK DISRUPTION TRIGGER -->
+      <button class="disruption-menu-btn" onclick="window.trinetraApp.switchTab('tab-simulator')">
+        ⚡ Run Crisis Simulator
+      </button>
+
+      <!-- ROLE-BASED ACCESS CONTROL PROFILE SWITCHER -->
+      <div class="role-switcher-container">
+        <label for="role-select">Active Role:</label>
+        <select id="role-select" class="role-select">
+          <!-- Populated dynamically with 6 roles -->
+        </select>
+      </div>
+    </div>
+  </header>
+
+  <!-- NAVIGATION TABS BAR -->
+  <nav class="nav-tabs-bar">
+    <button class="nav-tab-btn active" data-target="tab-3d-campus">
+      🏛️ 3D Digital Twin & Campus Explorer
+    </button>
+    <button class="nav-tab-btn" data-target="tab-command-center">
+      📊 Central Control Room (KPIs)
+    </button>
+    <button class="nav-tab-btn" data-target="tab-incidents">
+      🧠 Unified AI Incident Engine
+    </button>
+    <button class="nav-tab-btn" data-target="tab-workforce">
+      🛠️ Maintenance & Workforce
+    </button>
+    <button class="nav-tab-btn" data-target="tab-space">
+      📐 Space & Resource Manager
+    </button>
+    <button class="nav-tab-btn" data-target="tab-inventory">
+      📦 Inventory & Procurement
+    </button>
+    <button class="nav-tab-btn" data-target="tab-simulator">
+      ⚡ Digital Twin Simulator
+    </button>
+    <button class="nav-tab-btn" data-target="tab-campusops">
+      📡 Mobile Signals (CampusOps)
+    </button>
+    <button class="nav-tab-btn" data-target="tab-rbac">
+      🛡️ RBAC & Audit Trail
+    </button>
+  </nav>
+
+  <!-- MAIN APP PANES -->
+  <main class="app-content-container">
+
+    <!-- TAB 1: 3D DIGITAL TWIN & CAMPUS EXPLORER -->
+    <section class="tab-pane active" id="tab-3d-campus">
+      <div id="canvas-container"></div>
+
+      <!-- TOP FLOATING 3D HUD -->
+      <div class="hud-overlay-top">
+        <div class="hud-title-card">
+          <h2>SRM Easwari Engineering College</h2>
+          <p>Bharathi Salai, Ramapuram • 12.98667° N, 79.97194° E</p>
+        </div>
+
+        <div class="hud-view-modes">
+          <button class="hud-btn active" data-mode="photorealistic" onclick="window.trinetraApp.set3dViewMode('photorealistic')">
+            Photorealistic 3D
+          </button>
+          <button class="hud-btn" data-mode="operational" onclick="window.trinetraApp.set3dViewMode('operational')">
+            Operational 3D Twin
+          </button>
+          <button class="hud-btn" data-mode="schematic" onclick="window.trinetraApp.set3dViewMode('schematic')">
+            2D CAD Schematic
+          </button>
+          <button class="hud-btn" data-mode="satellite" onclick="window.trinetraApp.set3dViewMode('satellite')">
+            Satellite View
+          </button>
+        </div>
+      </div>
+
+      <!-- BOTTOM HUD ACTION BAR FOR EXPLODED VIEW & INSPECTIONS -->
+      <div class="hud-overlay-bottom">
+        <button class="hud-action-btn" onclick="window.trinetraApp.returnToCampus()">
+          🏛️ Campus Overview
+        </button>
+
+        <button class="hud-action-btn" id="btn-hud-exploded" onclick="window.trinetraApp.setExplodedView(true)">
+          🏗️ Exploded Floor Mode
+        </button>
+
+        <div class="floor-chips-container">
+          <span style="font-size: 11px; font-weight: 700; color: var(--text-muted); align-self: center; margin-right: 4px;">Isolate:</span>
+          <button class="floor-chip" onclick="window.trinetraApp.isolateFloor(0)">G</button>
+          <button class="floor-chip" onclick="window.trinetraApp.isolateFloor(1)">1F</button>
+          <button class="floor-chip active" onclick="window.trinetraApp.isolateFloor(2)">2F (Exam)</button>
+          <button class="floor-chip" onclick="window.trinetraApp.isolateFloor(3)">3F</button>
+        </div>
+
+        <button class="hud-action-btn" onclick="window.trinetraApp.showAllFloors()">
+          Show All Floors
+        </button>
+
+        <button class="hud-action-btn active-action" onclick="window.trinetraApp.inspectRoom('E-204')">
+          🔍 Inspect Room E-204 (Critical)
+        </button>
+      </div>
+
+      <!-- RIGHT INSPECTION DRAWER PANEL -->
+      <aside class="inspector-drawer closed" id="inspector-drawer">
+        <div class="inspector-header">
+          <h3 id="inspector-title">Facility Inspector</h3>
+          <button class="drawer-close-btn" id="drawer-close-btn">✕</button>
+        </div>
+        <div class="inspector-body" id="inspector-body">
+          <!-- Populated dynamically upon clicking buildings, floors, rooms, or assets -->
+        </div>
+      </aside>
+    </section>
+
+    <!-- TAB 2: CENTRAL CONTROL ROOM (COMMAND CENTER) -->
+    <section class="tab-pane" id="tab-command-center">
+      <!-- Loaded dynamically by DashboardController -->
+    </section>
+
+    <!-- TAB 3: UNIFIED AI INCIDENT ENGINE -->
+    <section class="tab-pane" id="tab-incidents">
+      <!-- Loaded dynamically by IncidentsViewController -->
+    </section>
+
+    <!-- TAB 4: MAINTENANCE & WORKFORCE -->
+    <section class="tab-pane" id="tab-workforce">
+      <!-- Loaded dynamically by WorkforceViewController -->
+    </section>
+
+    <!-- TAB 5: SPACE & RESOURCE MANAGEMENT -->
+    <section class="tab-pane" id="tab-space">
+      <!-- Loaded dynamically by SpaceViewController -->
+    </section>
+
+    <!-- TAB 6: INVENTORY & PROCUREMENT -->
+    <section class="tab-pane" id="tab-inventory">
+      <!-- Loaded dynamically by InventoryViewController -->
+    </section>
+
+    <!-- TAB 7: DIGITAL TWIN SIMULATOR -->
+    <section class="tab-pane" id="tab-simulator">
+      <!-- Loaded dynamically by SimulatorViewController -->
+    </section>
+
+    <!-- TAB 8: MOBILE SIGNALS / CAMPUSOPS -->
+    <section class="tab-pane" id="tab-campusops">
+      <!-- Loaded dynamically by CampusOpsViewController -->
+    </section>
+
+    <!-- TAB 9: RBAC & AUDIT TRAIL -->
+    <section class="tab-pane" id="tab-rbac">
+      <!-- Loaded dynamically by RbacViewController -->
+    </section>
+
+  </main>
+
+  <!-- LIVE TOAST CONTAINER -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <!-- APPLICATION ENTRY SCRIPT -->
+  <script type="module" src="js/app.js"></script>
+
+</body>
+</html>
