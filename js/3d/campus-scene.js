@@ -200,12 +200,10 @@ export class CampusScene {
     this.scene.add(this.ambientLight);
 
     // Groups
-    this.crisisEffectsGroup = new THREE.Group();
     this.scene.add(this.campusGroup);
     this.scene.add(this.roomInteriorGroup);
     this.scene.add(this.bleParticlesGroup);
     this.scene.add(this.labelsGroup);
-    this.scene.add(this.crisisEffectsGroup);
 
     // Window resize
     window.addEventListener('resize', () => this.onWindowResize());
@@ -1157,131 +1155,6 @@ export class CampusScene {
     });
   }
 
-  // --- 3D CRISIS DEMONSTRATION EFFECTS ---
-  addCrisisBeacon(x, y, z, colorHex = 0xEF4444, labelText = 'CRITICAL ALARM') {
-    const group = new THREE.Group();
-    group.position.set(x, y, z);
-    group.userData = { type: 'beacon', timeOffset: Math.random() * 10 };
-
-    // 1. Vertical Holographic Warning Column
-    const colGeo = new THREE.CylinderGeometry(0.2, 2.5, 30, 16, 1, true);
-    const colMat = new THREE.MeshBasicMaterial({
-      color: colorHex,
-      transparent: true,
-      opacity: 0.45,
-      side: THREE.DoubleSide
-    });
-    const col = new THREE.Mesh(colGeo, colMat);
-    col.position.y = 15;
-    group.add(col);
-
-    // 2. Concentric Expanding Ground Rings
-    const ringGeo = new THREE.RingGeometry(1.5, 2.2, 32);
-    const ringMat = new THREE.MeshBasicMaterial({
-      color: colorHex,
-      transparent: true,
-      opacity: 0.85,
-      side: THREE.DoubleSide
-    });
-    const ring1 = new THREE.Mesh(ringGeo, ringMat.clone());
-    ring1.rotation.x = -Math.PI / 2;
-    ring1.position.y = 0.2;
-    group.add(ring1);
-
-    const ring2 = new THREE.Mesh(ringGeo, ringMat.clone());
-    ring2.rotation.x = -Math.PI / 2;
-    ring2.position.y = 0.2;
-    group.add(ring2);
-
-    // 3. Floating 3D Warning Label
-    const canvas = document.createElement('canvas');
-    canvas.width = 256;
-    canvas.height = 64;
-    const ctx = canvas.getContext('2d');
-    ctx.fillStyle = '#DC2626';
-    if (ctx.roundRect) ctx.roundRect(4, 4, 248, 56, 10);
-    else ctx.rect(4, 4, 248, 56);
-    ctx.fill();
-    ctx.strokeStyle = '#FFFFFF';
-    ctx.lineWidth = 3;
-    ctx.stroke();
-    ctx.fillStyle = '#FFFFFF';
-    ctx.font = 'bold 22px system-ui, sans-serif';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillText(`🚨 ${labelText}`, 128, 32);
-
-    const tex = new THREE.CanvasTexture(canvas);
-    const spMat = new THREE.SpriteMaterial({ map: tex, depthTest: false });
-    const sprite = new THREE.Sprite(spMat);
-    sprite.position.set(0, 18, 0);
-    sprite.scale.set(12, 3.2, 1);
-    group.add(sprite);
-
-    group.userData.rings = [ring1, ring2];
-    group.userData.column = col;
-
-    this.crisisEffectsGroup.add(group);
-    return group;
-  }
-
-  addNetworkTrunk(startPos, endPos, colorHex = 0x0EA5E9, isSevered = false) {
-    const group = new THREE.Group();
-
-    if (!isSevered) {
-      const points = [startPos, endPos];
-      const geo = new THREE.BufferGeometry().setFromPoints(points);
-      const mat = new THREE.LineBasicMaterial({ color: colorHex, linewidth: 3 });
-      const line = new THREE.Line(geo, mat);
-      group.add(line);
-    } else {
-      // Severed fiber trunk with gap and red warning spark
-      const mid = new THREE.Vector3().addVectors(startPos, endPos).multiplyScalar(0.5);
-      const dir = new THREE.Vector3().subVectors(endPos, startPos).normalize();
-      const p1 = new THREE.Vector3().copy(mid).sub(dir.clone().multiplyScalar(4));
-      const p2 = new THREE.Vector3().copy(mid).add(dir.clone().multiplyScalar(4));
-
-      const geo1 = new THREE.BufferGeometry().setFromPoints([startPos, p1]);
-      const line1 = new THREE.Line(geo1, new THREE.LineBasicMaterial({ color: 0xDC2626 }));
-      group.add(line1);
-
-      const geo2 = new THREE.BufferGeometry().setFromPoints([p2, endPos]);
-      const line2 = new THREE.Line(geo2, new THREE.LineBasicMaterial({ color: 0xDC2626 }));
-      group.add(line2);
-
-      // Fault spark at severance point
-      const sparkGeo = new THREE.SphereGeometry(1.5, 12, 12);
-      const sparkMat = new THREE.MeshBasicMaterial({ color: 0xEF4444, wireframe: true });
-      const spark = new THREE.Mesh(sparkGeo, sparkMat);
-      spark.position.copy(mid);
-      group.add(spark);
-    }
-
-    this.crisisEffectsGroup.add(group);
-    return group;
-  }
-
-  setPowerGridBlackout(isBlackout) {
-    if (isBlackout) {
-      this.scene.background = new THREE.Color(0x050811);
-      this.scene.fog.color = new THREE.Color(0x050811);
-      this.sunLight.intensity = 0.08;
-      this.ambientLight.intensity = 0.05;
-      this.hemiLight.intensity = 0.05;
-    } else {
-      this.scene.background = new THREE.Color(0xF0F4F8);
-      this.scene.fog.color = new THREE.Color(0xF0F4F8);
-      this.sunLight.intensity = 1.3;
-      this.ambientLight.intensity = 0.35;
-      this.hemiLight.intensity = 0.65;
-    }
-  }
-
-  clearCrisisEffects() {
-    this.crisisEffectsGroup.clear();
-    this.setPowerGridBlackout(false);
-  }
-
   // --- REAL-TIME REACTIVITY & TELEMETRY UPDATES ---
   updateDynamicStatus() {
     const buildings = db.getBuildings();
@@ -1378,20 +1251,6 @@ export class CampusScene {
     this.bleParticlesGroup.children.forEach((p, idx) => {
       const scale = 1 + Math.sin(time * 3 + idx) * 0.15;
       p.scale.set(scale, scale, scale);
-    });
-
-    // Animate crisis beacons and ripple rings
-    this.crisisEffectsGroup.children.forEach(grp => {
-      if (grp.userData && grp.userData.type === 'beacon' && grp.userData.rings) {
-        const t1 = (time * 2 + grp.userData.timeOffset) % 2;
-        const t2 = (time * 2 + grp.userData.timeOffset + 1) % 2;
-        
-        grp.userData.rings[0].scale.set(1 + t1 * 3, 1 + t1 * 3, 1);
-        grp.userData.rings[0].material.opacity = Math.max(0, 0.9 - t1 * 0.45);
-
-        grp.userData.rings[1].scale.set(1 + t2 * 3, 1 + t2 * 3, 1);
-        grp.userData.rings[1].material.opacity = Math.max(0, 0.9 - t2 * 0.45);
-      }
     });
 
     this.renderer.render(this.scene, this.camera);
