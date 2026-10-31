@@ -775,7 +775,172 @@ body {
 .rssi-fill-moderate { background-color: var(--status-amber); }
 .rssi-fill-weak { background-color: var(--status-red); }
 
-/* TOAST NOTIFICATIONS */
+/* CINEMATIC LIVE 3D SIMULATION HUD */
+.sim-hud-overlay {
+  position: absolute;
+  top: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(850px, 94%);
+  background: rgba(15, 23, 42, 0.94);
+  backdrop-filter: blur(14px);
+  border: 1px solid rgba(56, 189, 248, 0.4);
+  border-radius: var(--radius-lg);
+  padding: 16px 22px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), 0 0 20px rgba(14, 165, 233, 0.25);
+  z-index: 45;
+  color: #FFFFFF;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  animation: slideDownFade 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes slideDownFade {
+  from { transform: translate(-50%, -30px); opacity: 0; }
+  to { transform: translate(-50%, 0); opacity: 1; }
+}
+
+.sim-hud-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.sim-hud-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(220, 38, 38, 0.25);
+  border: 1px solid #EF4444;
+  color: #FCA5A5;
+  font-size: 11px;
+  font-weight: 800;
+  padding: 3px 10px;
+  border-radius: 20px;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  animation: blinkBorder 1.5s infinite;
+}
+
+@keyframes blinkBorder {
+  0%, 100% { border-color: #EF4444; box-shadow: 0 0 8px rgba(239, 68, 68, 0.6); }
+  50% { border-color: rgba(239, 68, 68, 0.3); box-shadow: none; }
+}
+
+.sim-hud-title {
+  font-size: 16px;
+  font-weight: 800;
+  color: #FFFFFF;
+  margin-top: 4px;
+}
+
+.sim-hud-narration {
+  font-size: 13px;
+  color: #E2E8F0;
+  line-height: 1.45;
+  background: rgba(30, 41, 59, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 10px 14px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.sim-hud-narration-icon {
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+.sim-step-bar-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  color: #94A3B8;
+}
+
+.sim-step-progress-track {
+  flex: 1;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.sim-step-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #38BDF8, #22C55E);
+  border-radius: 3px;
+  transition: width 0.4s ease;
+}
+
+.sim-hud-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.sim-btn-primary {
+  background: linear-gradient(135deg, #0284C7, #0EA5E9);
+  color: #FFFFFF;
+  border: none;
+  padding: 7px 16px;
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s;
+  box-shadow: 0 2px 8px rgba(14, 165, 233, 0.4);
+}
+
+.sim-btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(14, 165, 233, 0.6);
+}
+
+.sim-btn-danger {
+  background: linear-gradient(135deg, #DC2626, #EF4444);
+  color: #FFFFFF;
+  border: none;
+  padding: 7px 14px;
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.sim-btn-secondary {
+  background: rgba(255, 255, 255, 0.1);
+  color: #F1F5F9;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 7px 14px;
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.sim-btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* 3D CRISIS FAULT BEACON PULSE */
+@keyframes beaconPulse {
+  0% { transform: scale(1); opacity: 0.9; }
+  50% { transform: scale(1.6); opacity: 0.4; }
+  100% { transform: scale(2.2); opacity: 0; }
+}
 .toast-container {
   position: fixed;
   bottom: 24px;

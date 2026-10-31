@@ -72,8 +72,9 @@ export class SimulatorViewController {
                 </ul>
               </div>
 
-              <button class="btn-primary" style="width: 100%; padding: 10px;" onclick="window.trinetraApp.executeSimulationScenario('${sc.id}')">
-                ⚡ Execute Crisis Simulation on Live System
+              <button class="btn-primary" style="width: 100%; padding: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 13px; box-shadow: 0 4px 10px rgba(57, 120, 198, 0.3);" onclick="window.trinetraApp.executeSimulationScenario('${sc.id}')">
+                <span>⚡ Execute & Demonstrate 3Dly on Campus</span>
+                <span>🏛️</span>
               </button>
             </div>
           `).join('')}
